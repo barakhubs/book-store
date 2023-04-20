@@ -24,29 +24,31 @@ class Order
         $this->conn = $db;
     }
 
-    // Get categories
-    public function read()
-    {
-        // Create query
-        $query = 'SELECT b.title as book_title, b.price as book_price, b.cover_image as book_cover, b.author as book_author, 
-                         u.username as username, u.email as user_email, o.id, o.book_id, o.user_id, o.status, o.created_at
-                                FROM ' . $this->table . ' o
-                                LEFT JOIN
-                                  books b ON o.book_id = b.id
-                                LEFT JOIN
-                                  users u ON o.user_id = u.id
-                                ORDER BY
-                                  o.created_at DESC';
+    // Get orders
+     public function read($user)
+{
+    // Create query
+    $query = 'SELECT b.title as book_title, b.price as book_price, b.cover_image as book_cover, b.author as book_author, 
+                     u.username as username, u.email as user_email, c.id, c.book_id, c.user_id, c.status, c.created_at
+                            FROM ' . $this->table . ' c
+                            LEFT JOIN
+                              books b ON c.book_id = b.id
+                            LEFT JOIN
+                              users u ON c.user_id = u.id
+                            WHERE user_id = ?
+                            ORDER BY
+                              c.created_at DESC';
 
-        // Prepare statement
-        $stmt = $this->conn->prepare($query);
+    // Prepare statement
+    $stmt = $this->conn->prepare($query);
 
-        // Execute query
-        $stmt->execute();
+    $stmt->bindParam(1, $user);
 
-        return $stmt;
-    }
+    // Execute query
+    $stmt->execute();
 
+    return $stmt;
+}
     // Get Single Order
     public function read_single()
     {
@@ -85,6 +87,55 @@ class Order
         $this->user_email = $row['user_email'];
         $this->book_id = $row['book_id'];
 
+    }
+
+    // Create Order
+    public function create()
+    {
+        // Create Query
+        $query = 'INSERT INTO ' .
+            $this->table . '
+        SET
+            book_id = :book_id,
+            user_id = :user_id,
+            status = :status';
+
+        // Prepare Statement
+        $stmt = $this->conn->prepare($query);
+
+        // Clean data
+        $this->book_id = htmlspecialchars(strip_tags($this->book_id));
+        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
+        $this->status = htmlspecialchars(strip_tags($this->status));
+
+        // Bind data
+        $stmt->bindParam(':book_id', $this->book_id);
+        $stmt->bindParam(':user_id', $this->user_id);
+        $stmt->bindParam(':status', $this->status);
+
+        // Execute query
+        if ($stmt->execute()) {
+            // delete all from cart
+            $query = 'DELETE FROM carts WHERE book_id = :book_id AND user_id = :user_id';
+
+            // Prepare Statement
+            $stmt = $this->conn->prepare($query);
+
+            // Bind Data
+            $stmt->bindParam(':user_id', $this->user_id);
+             $stmt->bindParam(':book_id', $this->book_id);
+
+            // Execute query
+            if ($stmt->execute()) {
+                return true;
+            }
+            return true;
+        }
+
+        // Print error if something goes wrong
+        printf("Error: %s.\n", $stmt->error);
+
+        return false;
     }
 
     // Update Order

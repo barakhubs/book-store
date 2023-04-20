@@ -24,28 +24,32 @@ class Cart
         $this->conn = $db;
     }
 
-    // Get categories
-    public function read()
-    {
-        // Create query
-        $query = 'SELECT b.title as book_title, b.price as book_price, b.cover_image as book_cover, b.author as book_author, 
-                         u.username as username, u.email as user_email, c.id, c.book_id, c.user_id, c.quantity, c.created_at
-                                FROM ' . $this->table . ' c
-                                LEFT JOIN
-                                  books b ON c.book_id = b.id
-                                LEFT JOIN
-                                  users u ON c.user_id = u.id
-                                ORDER BY
-                                  c.created_at DESC';
+    // Get carts
+    public function read($user)
+{
+    // Create query
+    $query = 'SELECT b.title as book_title, b.price as book_price, b.cover_image as book_cover, b.author as book_author, 
+                     u.username as username, u.email as user_email, c.id, c.book_id, c.user_id, c.quantity, c.created_at
+                            FROM ' . $this->table . ' c
+                            LEFT JOIN
+                              books b ON c.book_id = b.id
+                            LEFT JOIN
+                              users u ON c.user_id = u.id
+                            WHERE user_id = ?
+                            ORDER BY
+                              c.created_at DESC';
 
-        // Prepare statement
-        $stmt = $this->conn->prepare($query);
+    // Prepare statement
+    $stmt = $this->conn->prepare($query);
 
-        // Execute query
-        $stmt->execute();
+    $stmt->bindParam(1, $user);
 
-        return $stmt;
-    }
+    // Execute query
+    $stmt->execute();
+
+    return $stmt;
+}
+
 
     // Get Single Order
     public function read_single()

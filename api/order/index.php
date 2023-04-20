@@ -13,8 +13,11 @@
   // Instantiate blog order object
   $order = new Order($db);
 
+  // get user id
+  $user_id = isset($_GET['user']) ? $_GET['user'] : die();
+
   // Blog order query
-  $result = $order->read();
+  $result = $order->read($user_id);
   // Get row count
   $num = $result->rowCount();
 
@@ -38,6 +41,7 @@
         'username'  => $username,
         'user_email' => $user_email,
         'book_id' => $book_id,
+        'created_at' => date('M d, Y', strtotime($created_at))
       );
 
       // Push to "data"

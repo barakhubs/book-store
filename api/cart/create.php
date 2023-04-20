@@ -37,7 +37,7 @@ try {
   // Create cart
   if ($cart->create()) {
     echo json_encode(
-      array('message' => 'Cart Created')
+      array('message' => 'Cart Created', 'token' => $token)
     );
   } else {
     echo json_encode(

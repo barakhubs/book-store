@@ -1,11 +1,28 @@
-<?php 
-  // Headers
-  header('Access-Control-Allow-Origin: *');
-  header('Content-Type: application/json');
+<?php
+// Headers
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: GET');
+// Allow specific HTTP headers (e.g. Content-Type, Authorization)
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-  include_once '../../config/Database.php';
-  include_once '../../models/Cart.php';
 
+include_once '../../config/Database.php';
+include_once '../../models/Cart.php';
+require("../../vendor/autoload.php");
+
+// use Firebase\JWT\JWT;
+// use Firebase\JWT\Key;
+
+
+// $headers = getallheaders();
+// $authcode = trim($headers['Authorization']);
+// $token = substr($authcode, 7);
+// $key = "SECRET_KEY";
+
+// try {
+//   $decoded = JWT::decode($token, new Key($key, 'HS256'));
+  // Instantiate DB & connect
   // Instantiate DB & connect
   $database = new Database();
   $db = $database->connect();
@@ -13,10 +30,13 @@
   // Instantiate blog cart object
   $cart = new Cart($db);
 
+  // get user id
+  $user_id = isset($_GET['user']) ? $_GET['user'] : die();
   // Blog cart query
-  $result = $cart->read();
+  $result = $cart->read($user_id);
   // Get row count
   $num = $result->rowCount();
+  
 
   // Check if any carts
   if($num > 0) {
@@ -54,3 +74,16 @@
       array('message' => 'No Carts Found')
     );
   }
+
+
+// } catch (Exception $e) {
+//   $message = [
+//     "Status" => 400,
+//     'data' => $e->getMessage(),
+//     'message' => 'Access Denied'
+//   ];
+
+//   echo json_encode([
+//     "message" => $message
+//   ]);
+// }

@@ -70,6 +70,7 @@ class User
                     "message" => "Success",
                     "token" => $token,
                     "email" => $user['email'],
+                    "id" => $user['id'],
                     "username" => $user['username'],
                     "expireAt" => $expireClaim
                 ]);

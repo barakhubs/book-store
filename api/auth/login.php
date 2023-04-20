@@ -23,10 +23,7 @@
 
   // Create user
   if($user->login()) {
-    echo json_encode(
-      array(
-        'message' => 'User logged')
-    );
+    return true;
   } else {
     echo json_encode(
       array('message' => 'User Not Created')
