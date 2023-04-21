@@ -1,33 +1,35 @@
-<?php 
-  // Headers
-  header('Access-Control-Allow-Origin: *');
-  header('Content-Type: application/json');
+<?php
 
-  include_once '../../config/Database.php';
-  include_once '../../models/Book.php';
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
 
-  // Instantiate DB & connect
-  $database = new Database();
-  $db = $database->connect();
+include_once '../../config/Database.php';
+include_once '../../models/Book.php';
 
-  // Instantiate blog post object
-  $book = new Book($db);
+// Instantiate DB & connect
+$database = new Database();
+$db = $database->connect();
 
-  // Get ID
-  $book->id = isset($_GET['id']) ? $_GET['id'] : die();
+// Instantiate book object
+$book = new Book($db);
 
-  // Get post
-  $book->read_single();
+// Get ID
+$book->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-  // Create array
-  $book_arr = array(
+// Get book
+$book->read_single();
+
+// Create array
+$book_arr = array(
     'id' => $book->id,
     'title' => $book->title,
     'price' => $book->price,
     'author' => $book->author,
     'cover_image' => $book->cover_image,
     'details' => $book->details
-  );
+);
 
-  // Make JSON
-  print_r(json_encode($book_arr));
+// Convert to JSON
+echo json_encode($book_arr);
+
+?>

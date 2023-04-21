@@ -1,4 +1,5 @@
 <?php
+
 class Book
 {
   // DB Stuff
@@ -25,17 +26,17 @@ class Book
   {
     // Create query
     $query = 'SELECT
-        id,
-        title,
-        cover_image,
-        author,
-        price,
-        details,
-        created_at
-      FROM
-        ' . $this->table . '
-      ORDER BY
-        created_at DESC';
+            id,
+            title,
+            cover_image,
+            author,
+            price,
+            details,
+            created_at
+        FROM
+            ' . $this->table . '
+        ORDER BY
+            created_at DESC';
 
     // Prepare statement
     $stmt = $this->conn->prepare($query);
@@ -51,16 +52,16 @@ class Book
   {
     // Create query
     $query = 'SELECT
-          id,
-          title,
-          cover_image,
-          author,
-          price,
-          details
+            id,
+            title,
+            cover_image,
+            author,
+            price,
+            details
         FROM
-          ' . $this->table . '
-      WHERE id = ?
-      LIMIT 0,1';
+            ' . $this->table . '
+        WHERE id = ?
+        LIMIT 0,1';
 
     //Prepare statement
     $stmt = $this->conn->prepare($query);
@@ -88,12 +89,12 @@ class Book
     // Create Query
     $query = 'INSERT INTO ' .
       $this->table . '
-    SET
-      title = :title, 
-      cover_image = :cover_image, 
-      price = :price,
-      author = :author,
-      details = :details';
+            SET
+            title = :title, 
+            cover_image = :cover_image, 
+            price = :price,
+            author = :author,
+            details = :details';
 
     // Prepare Statement
     $stmt = $this->conn->prepare($query);
@@ -104,7 +105,7 @@ class Book
     $this->cover_image = htmlspecialchars(strip_tags($this->cover_image));
     $this->author = htmlspecialchars(strip_tags($this->author));
     $this->details = htmlspecialchars(strip_tags($this->details));
-    
+
     // Bind data
     $stmt->bindParam(':title', $this->title);
     $stmt->bindParam(':price', $this->price);
@@ -118,7 +119,7 @@ class Book
     }
 
     // Print error if something goes wrong
-    printf("Error: \n", $stmt->error);
+    printf("Error: %s\n", $stmt->errorInfo()[2]);
 
     return false;
   }
@@ -129,33 +130,32 @@ class Book
     // Create Query
     $query = 'UPDATE ' .
       $this->table . '
-    SET
-        title = :title, 
-        cover_image = :cover_image, 
-        price = :price,
-        author = :author,
-        details = :details
-    WHERE
-        id = :id';
+                SET
+                title = :title, 
+                cover_image = :cover_image, 
+                price = :price,
+                author = :author,
+                details = :details
+                WHERE id = :id';
 
     // Prepare Statement
     $stmt = $this->conn->prepare($query);
 
     // Clean data
+    $this->id = htmlspecialchars(strip_tags($this->id));
     $this->title = htmlspecialchars(strip_tags($this->title));
     $this->price = htmlspecialchars(strip_tags($this->price));
     $this->cover_image = htmlspecialchars(strip_tags($this->cover_image));
     $this->author = htmlspecialchars(strip_tags($this->author));
     $this->details = htmlspecialchars(strip_tags($this->details));
-    $this->id = htmlspecialchars(strip_tags($this->id));
 
     // Bind data
+    $stmt->bindParam(':id', $this->id);
     $stmt->bindParam(':title', $this->title);
     $stmt->bindParam(':price', $this->price);
     $stmt->bindParam(':cover_image', $this->cover_image);
     $stmt->bindParam(':author', $this->author);
     $stmt->bindParam(':details', $this->details);
-    $stmt->bindParam(':id', $this->id);
 
     // Execute query
     if ($stmt->execute()) {
@@ -163,7 +163,7 @@ class Book
     }
 
     // Print error if something goes wrong
-    printf("Error: \n", $stmt->error);
+    printf("Error: %s\n", $stmt->errorInfo()[2]);
 
     return false;
   }
@@ -177,10 +177,10 @@ class Book
     // Prepare Statement
     $stmt = $this->conn->prepare($query);
 
-    // clean data
+    // Clean data
     $this->id = htmlspecialchars(strip_tags($this->id));
 
-    // Bind Data
+    // Bind data
     $stmt->bindParam(':id', $this->id);
 
     // Execute query
@@ -189,7 +189,7 @@ class Book
     }
 
     // Print error if something goes wrong
-    printf("Error: \n", $stmt->error);
+    printf("Error: %s\n", $stmt->errorInfo()[2]);
 
     return false;
   }

@@ -1,9 +1,8 @@
-<?php
+<?php 
 
 require __DIR__ . "/../vendor/autoload.php";
 
 use \Firebase\JWT\JWT;
-// use SimpleJWT\JWT;
 
 class User
 {
@@ -12,6 +11,7 @@ class User
     public $email;
     public $password;
     public $username;
+
     public function __construct($conn)
     {
         $this->conn = $conn;
@@ -49,31 +49,32 @@ class User
         // Verify password if user is found
         if ($user && password_verify($this->password, $user['password'])) {
             $issuedatClaim = time();
-                $notbeforeClaim = $issuedatClaim + 10;
-                $expireClaim = $issuedatClaim + 24 * 60 * 60 * 7;
-                $tokenPayload = [
-                    "iss" => 'http://localhost',
-                    "iat" => $issuedatClaim,
-                    "nbf" => $notbeforeClaim,
-                    "exp" => $expireClaim,
-                    "data" => [
-                        "id" => $user['id'],
-                        "email" => $user['email']
-                    ]
-                ];
-    
-                $token = JWT::encode($tokenPayload, 'SECRET_KEY', 'HS256');
-    
-                http_response_code(200);
-
-                echo json_encode([
-                    "message" => "Success",
-                    "token" => $token,
-                    "email" => $user['email'],
+            $notbeforeClaim = $issuedatClaim + 10;
+            $expireClaim = $issuedatClaim + 24 * 60 * 60 * 7;
+            $tokenPayload = [
+                "iss" => 'http://localhost',
+                "iat" => $issuedatClaim,
+                "nbf" => $notbeforeClaim,
+                "exp" => $expireClaim,
+                "data" => [
                     "id" => $user['id'],
-                    "username" => $user['username'],
-                    "expireAt" => $expireClaim
-                ]);
+                    "email" => $user['email']
+                ]
+            ];
+
+            $token = JWT::encode($tokenPayload, 'SECRET_KEY', 'HS256');
+
+            http_response_code(200);
+
+            echo json_encode([
+                "message" => "Success",
+                "token" => $token,
+                "email" => $user['email'],
+                "id" => $user['id'],
+                "username" => $user['username'],
+                "expireAt" => $expireClaim
+            ]);
+
             // Password is correct, return true
             return true;
         }
